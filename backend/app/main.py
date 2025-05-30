@@ -2,7 +2,6 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine
 
 from app.repository import RepositoryContext, get_repository_context
 from app.routers.v1 import updates_router
