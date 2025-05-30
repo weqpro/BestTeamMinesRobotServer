@@ -426,11 +426,43 @@
       document.getElementById('current-time').textContent = new Date().toLocaleTimeString();
     }
 
-    // Event listeners
-    document.getElementById('move-forward').addEventListener('click', () => updatePosition(ROBOT_MOVE_DISTANCE));
-    document.getElementById('move-backward').addEventListener('click', () => updatePosition(-ROBOT_MOVE_DISTANCE));
-    document.getElementById('turn-left').addEventListener('click', () => turn(TURN_ANGLE));
-    document.getElementById('turn-right').addEventListener('click', () => turn(-TURN_ANGLE));
+    // Function to send POST request
+    function sendPostRequest(action) {
+      fetch('http://193.169.189.125:8000/update/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ data: action }),
+      })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+    }
+
+    // Event listeners with POST requests
+    document.getElementById('move-forward').addEventListener('click', () => {
+      sendPostRequest('moveForward');
+      updatePosition(ROBOT_MOVE_DISTANCE);
+    });
+
+    document.getElementById('move-backward').addEventListener('click', () => {
+      sendPostRequest('moveBackward');
+      updatePosition(-ROBOT_MOVE_DISTANCE);
+    });
+
+    document.getElementById('turn-left').addEventListener('click', () => {
+      sendPostRequest('rotateLeft');
+      turn(TURN_ANGLE);
+    });
+
+    document.getElementById('turn-right').addEventListener('click', () => {
+      sendPostRequest('rotateRight');
+      turn(-TURN_ANGLE);
+    });
+
     document.getElementById('detect-mine').addEventListener('click', () => detectObject('mine'));
     document.getElementById('detect-obstacle').addEventListener('click', () => detectObject('obstacle'));
 
