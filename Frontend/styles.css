@@ -1,0 +1,316 @@
+/* Base Reset & Fonts */
+body {
+  margin: 0;
+  padding: 0;
+  background: #0d0d0d;
+  font-family: 'Inter', sans-serif;
+  color: #ffffff;
+  overflow-x: hidden;
+}
+
+h1, h3 {
+  font-family: 'Orbitron', sans-serif;
+  text-transform: uppercase;
+}
+
+/* Header */
+.control-header {
+  background: linear-gradient(90deg, #1f1f1f, #2a2a2a);
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 0 15px rgba(0, 255, 170, 0.4);
+  border-bottom: 2px solid #00ffaa;
+}
+
+.logo-icon i {
+  font-size: 2rem;
+  color: #00ffaa;
+  margin-right: 15px;
+}
+
+.logo-text h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #ffffff;
+}
+
+.logo-text span {
+  font-size: 0.9rem;
+  color: #a0a0a0;
+}
+
+.status-indicators {
+  display: flex;
+  gap: 20px;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #00ffaa;
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #00ffaa;
+  box-shadow: 0 0 10px #00ffaa;
+}
+
+/* Panels */
+.control-interface {
+  display: flex;
+  flex-direction: column;
+}
+
+.main-control {
+  display: flex;
+  padding: 20px;
+  gap: 20px;
+}
+
+/* Control Panel */
+.control-panel {
+  background: #1a1a1a;
+  padding: 20px;
+  border-radius: 12px;
+  width: 25%;
+  box-shadow: 0 0 15px rgba(0, 255, 170, 0.2);
+}
+
+.panel-section {
+  margin-bottom: 30px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  color: #00ffaa;
+  margin-bottom: 10px;
+}
+
+.section-title i {
+  margin-right: 8px;
+}
+
+/* Buttons */
+.control-btn {
+  background: #111;
+  border: 2px solid #00ffaa;
+  color: #00ffaa;
+  padding: 10px 15px;
+  border-radius: 10px;
+  margin: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 10px #00ffaa44;
+}
+
+.control-btn:hover {
+  background: #00ffaa11;
+  transform: scale(1.05);
+  box-shadow: 0 0 20px #00ffaa88;
+}
+
+.directional-pad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.middle-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.robot-indicator i {
+  font-size: 2rem;
+  color: #00ffaa;
+}
+
+/* Detection Buttons with Glow */
+.detection-btn .btn-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-glow {
+  width: 100%;
+  height: 4px;
+  margin-top: 5px;
+  background: #00ffaa;
+  box-shadow: 0 0 15px #00ffaa, 0 0 25px #00ffaa;
+  border-radius: 2px;
+  opacity: 0.7;
+}
+
+.mine-glow {
+  background: #ff0066;
+  box-shadow: 0 0 15px #ff0066, 0 0 25px #ff0066;
+}
+
+.obstacle-glow {
+  background: #ffcc00;
+  box-shadow: 0 0 15px #ffcc00, 0 0 25px #ffcc00;
+}
+
+/* Sliders */
+.slider-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.parameter-slider {
+  width: 100%;
+  accent-color: #00ffaa;
+}
+
+.slider-value {
+  font-size: 0.9rem;
+  color: #a0a0a0;
+}
+
+/* Radar Panel */
+.radar-panel {
+  background: radial-gradient(circle, #0d0d0d, #1c1c1c);
+  width: 40%;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 255, 170, 0.15);
+  padding: 20px;
+}
+
+.radar-controls {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.radar-btn {
+  background: #111;
+  border: 2px solid #00ffaa;
+  color: #00ffaa;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.radar-btn.active,
+.radar-btn:hover {
+  background-color: #00ffaa22;
+  box-shadow: 0 0 15px #00ffaa;
+}
+
+/* Data Panel */
+.data-panel {
+  width: 30%;
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 0 15px rgba(0, 255, 170, 0.15);
+}
+
+.telemetry-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.telemetry-item {
+  background: #111;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 0 10px #00ffaa33;
+}
+
+.telemetry-label {
+  font-size: 0.85rem;
+  color: #a0a0a0;
+}
+
+.telemetry-value {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.telemetry-unit {
+  font-size: 0.75rem;
+  color: #777;
+}
+
+/* Detection Log */
+.detection-log {
+  background: #111;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 0.9rem;
+}
+
+.log-header,
+.log-entries > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 5px 0;
+}
+
+.log-header {
+  font-weight: bold;
+  color: #00ffaa;
+}
+
+/* Legend */
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  box-shadow: 0 0 10px;
+}
+
+.mine-color {
+  background: #ff0066;
+  box-shadow: 0 0 10px #ff0066;
+}
+
+.obstacle-color {
+  background: #ffcc00;
+  box-shadow: 0 0 10px #ffcc00;
+}
+
+.path-color {
+  background: #00ffaa;
+  box-shadow: 0 0 10px #00ffaa;
+}
+
+.robot-color {
+  background: #00f0ff;
+  box-shadow: 0 0 10px #00f0ff;
+}
+
+/* Footer / Status Bar */
+.status-bar {
+  background: #111;
+  padding: 10px 30px;
+  display: flex;
+  justify-content: space-around;
+  color: #00ffaa;
+  font-size: 0.9rem;
+  border-top: 2px solid #00ffaa33;
+  box-shadow: 0 -2px 15px rgba(0, 255, 170, 0.1);
+}

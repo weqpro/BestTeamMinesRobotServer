@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Робот-Шукач Мін - Control Panel</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="control-interface">
+    <!-- Header -->
+    <header class="control-header">
+      <div class="header-content">
+        <div class="logo-section">
+          <div class="logo-icon">
+            <i class="fas fa-robot"></i>
+          </div>
+          <div class="logo-text">
+            <h1>РОБОТ-ШУКАЧ МІН</h1>
+            <span>Military Grade Detection System</span>
+          </div>
+        </div>
+        <div class="status-indicators">
+          <div class="status-item active">
+            <div class="status-dot"></div>
+            <span>ONLINE</span>
+          </div>
+          <div class="status-item">
+            <i class="fas fa-signal"></i>
+            <span>98%</span>
+          </div>
+          <div class="status-item">
+            <i class="fas fa-battery-three-quarters"></i>
+            <span>85%</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Control Area -->
+    <div class="main-control">
+      <!-- Left Panel - Controls -->
+      <div class="control-panel">
+        <div class="panel-section">
+          <h3 class="section-title">
+            <i class="fas fa-gamepad"></i>
+            MOVEMENT CONTROL
+          </h3>
+          <div class="movement-controls">
+            <div class="directional-pad">
+              <button class="control-btn move-btn" id="move-forward" data-direction="up">
+                <i class="fas fa-chevron-up"></i>
+                <span>FORWARD</span>
+              </button>
+              <div class="middle-row">
+                <button class="control-btn turn-btn" id="turn-left" data-direction="left">
+                  <i class="fas fa-chevron-left"></i>
+                  <span>LEFT</span>
+                </button>
+                <div class="center-indicator">
+                  <div class="robot-indicator">
+                    <i class="fas fa-robot"></i>
+                  </div>
+                </div>
+                <button class="control-btn turn-btn" id="turn-right" data-direction="right">
+                  <i class="fas fa-chevron-right"></i>
+                  <span>RIGHT</span>
+                </button>
+              </div>
+              <button class="control-btn move-btn" id="move-backward" data-direction="down">
+                <i class="fas fa-chevron-down"></i>
+                <span>BACKWARD</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h3 class="section-title">
+            <i class="fas fa-search"></i>
+            DETECTION SYSTEMS
+          </h3>
+          <div class="detection-controls">
+            <button class="control-btn detection-btn mine-detect" id="detect-mine">
+              <div class="btn-content">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>DETECT MINE</span>
+                <div class="btn-glow mine-glow"></div>
+              </div>
+            </button>
+            <button class="control-btn detection-btn obstacle-detect" id="detect-obstacle">
+              <div class="btn-content">
+                <i class="fas fa-cube"></i>
+                <span>DETECT OBSTACLE</span>
+                <div class="btn-glow obstacle-glow"></div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h3 class="section-title">
+            <i class="fas fa-sliders-h"></i>
+            SYSTEM PARAMETERS
+          </h3>
+          <div class="parameters">
+            <div class="parameter-row">
+              <label>Speed</label>
+              <div class="slider-container">
+                <input type="range" class="parameter-slider" min="0.05" max="0.3" step="0.05" value="0.1">
+                <span class="slider-value">0.1 m/s</span>
+              </div>
+            </div>
+            <div class="parameter-row">
+              <label>Turn Rate</label>
+              <div class="slider-container">
+                <input type="range" class="parameter-slider" min="5" max="45" step="5" value="15">
+                <span class="slider-value">15°/s</span>
+              </div>
+            </div>
+            <div class="parameter-row">
+              <label>Detection Range</label>
+              <div class="slider-container">
+                <input type="range" class="parameter-slider" min="0.2" max="1.0" step="0.1" value="0.5">
+                <span class="slider-value">0.5 m</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center Panel - Radar Display -->
+      <div class="radar-panel">
+        <div class="radar-container">
+          <div class="radar-screen">
+            <canvas id="canvas" width="500" height="500"></canvas>
+            <div class="radar-overlay">
+              <div class="radar-grid"></div>
+              <div class="radar-rings">
+                <div class="radar-ring" style="width: 100px; height: 100px;"></div>
+                <div class="radar-ring" style="width: 200px; height: 200px;"></div>
+                <div class="radar-ring" style="width: 300px; height: 300px;"></div>
+                <div class="radar-ring" style="width: 400px; height: 400px;"></div>
+              </div>
+              <div class="radar-crosshair">
+                <div class="crosshair-line horizontal"></div>
+                <div class="crosshair-line vertical"></div>
+              </div>
+            </div>
+          </div>
+          <div class="radar-controls">
+            <button class="radar-btn active">
+              <i class="fas fa-crosshairs"></i>
+              TRACKING
+            </button>
+            <button class="radar-btn">
+              <i class="fas fa-expand"></i>
+              ZOOM
+            </button>
+            <button class="radar-btn">
+              <i class="fas fa-history"></i>
+              HISTORY
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel - Data Display -->
+      <div class="data-panel">
+        <div class="panel-section">
+          <h3 class="section-title">
+            <i class="fas fa-tachometer-alt"></i>
+            TELEMETRY
+          </h3>
+          <div class="telemetry-grid">
+            <div class="telemetry-item">
+              <div class="telemetry-label">Position</div>
+              <div class="telemetry-value" id="robot-pos">(0.00, 0.00)</div>
+              <div class="telemetry-unit">meters</div>
+            </div>
+            <div class="telemetry-item">
+              <div class="telemetry-label">Heading</div>
+              <div class="telemetry-value" id="robot-facing">0</div>
+              <div class="telemetry-unit">degrees</div>
+            </div>
+            <div class="telemetry-item">
+              <div class="telemetry-label">Distance</div>
+              <div class="telemetry-value" id="distance-traveled">0.00</div>
+              <div class="telemetry-unit">meters</div>
+            </div>
+            <div class="telemetry-item">
+              <div class="telemetry-label">Speed</div>
+              <div class="telemetry-value">0.00</div>
+              <div class="telemetry-unit">m/s</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h3 class="section-title">
+            <i class="fas fa-chart-line"></i>
+            DETECTION LOG
+          </h3>
+          <div class="detection-log">
+            <div class="log-header">
+              <span>Time</span>
+              <span>Type</span>
+              <span>Coordinates</span>
+            </div>
+            <div class="log-entries" id="detection-log">
+              <!-- Log entries will be added dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h3 class="section-title">
+            <i class="fas fa-info-circle"></i>
+            LEGEND
+          </h3>
+          <div class="legend-items">
+            <div class="legend-item">
+              <div class="legend-color mine-color"></div>
+              <span>Mine Detected</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color obstacle-color"></div>
+              <span>Obstacle</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color path-color"></div>
+              <span>Robot Path</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color robot-color"></div>
+              <span>Robot Position</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Status Bar -->
+    <footer class="status-bar">
+      <div class="status-section">
+        <i class="fas fa-server"></i>
+        <span>System: OPERATIONAL</span>
+      </div>
+      <div class="status-section">
+        <i class="fas fa-clock"></i>
+        <span id="current-time">00:00:00</span>
+      </div>
+      <div class="status-section">
+        <i class="fas fa-map-marked"></i>
+        <span>Scale: 1px = 0.02m</span>
+      </div>
+      <div class="status-section">
+        <i class="fas fa-shield-alt"></i>
+        <span>Security: ACTIVE</span>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const CANVAS_WIDTH = 500;
+    const CANVAS_HEIGHT = 500;
+    const METERS_PER_PIXEL = 0.02;
+    const ROBOT_MOVE_DISTANCE = 0.1;
+    const TURN_ANGLE = 15;
+    const DETECTION_OFFSET = 0.5;
+
+    let robotX = 0;
+    let robotY = 0;
+    let robotFacing = 0;
+    let totalDistance = 0;
+    let path = [{ x: 0, y: 0 }];
+    let mines = [];
+    let obstacles = [];
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function metersToPixels(meters) {
+      return meters / METERS_PER_PIXEL;
+    }
+
+    function drawCanvas() {
+      ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+      // Draw path with glow effect
+      ctx.beginPath();
+      path.forEach((point, index) => {
+        const px = CANVAS_WIDTH / 2 + metersToPixels(point.x);
+        const py = CANVAS_HEIGHT / 2 - metersToPixels(point.y);
+        if (index === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      });
+      ctx.strokeStyle = '#00aaff';
+      ctx.lineWidth = 3;
+      ctx.shadowColor = '#00aaff';
+      ctx.shadowBlur = 10;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // Draw mines with pulsing effect
+      mines.forEach(mine => {
+        const px = CANVAS_WIDTH / 2 + metersToPixels(mine.x);
+        const py = CANVAS_HEIGHT / 2 - metersToPixels(mine.y);
+        
+        // Outer glow
+        ctx.beginPath();
+        ctx.arc(px, py, 8, 0, 2 * Math.PI);
+        ctx.fillStyle = 'rgba(255, 68, 68, 0.3)';
+        ctx.fill();
+        
+        // Inner circle
+        ctx.beginPath();
+        ctx.arc(px, py, 4, 0, 2 * Math.PI);
+        ctx.fillStyle = '#ff4444';
+        ctx.fill();
+      });
+
+      // Draw obstacles
+      obstacles.forEach(obstacle => {
+        const px = CANVAS_WIDTH / 2 + metersToPixels(obstacle.x);
+        const py = CANVAS_HEIGHT / 2 - metersToPixels(obstacle.y);
+        
+        ctx.beginPath();
+        ctx.arc(px, py, 6, 0, 2 * Math.PI);
+        ctx.fillStyle = '#888';
+        ctx.fill();
+        
+        // Highlight
+        ctx.beginPath();
+        ctx.arc(px, py, 4, 0, 2 * Math.PI);
+        ctx.fillStyle = '#aaa';
+        ctx.fill();
+      });
+
+      // Draw robot with enhanced arrow
+      const robotPx = CANVAS_WIDTH / 2 + metersToPixels(robotX);
+      const robotPy = CANVAS_HEIGHT / 2 - metersToPixels(robotY);
+      
+      // Robot body
+      ctx.beginPath();
+      ctx.arc(robotPx, robotPy, 8, 0, 2 * Math.PI);
+      ctx.fillStyle = '#007BFF';
+      ctx.fill();
+      
+      // Direction arrow
+      ctx.beginPath();
+      ctx.moveTo(robotPx, robotPy);
+      const arrowLength = 15;
+      const arrowAngle = Math.PI / 6;
+      const angle = (robotFacing * Math.PI) / 180 + Math.PI;
+      ctx.lineTo(
+        robotPx + arrowLength * Math.cos(angle - arrowAngle),
+        robotPy - arrowLength * Math.sin(angle - arrowAngle)
+      );
+      ctx.moveTo(robotPx, robotPy);
+      ctx.lineTo(
+        robotPx + arrowLength * Math.cos(angle + arrowAngle),
+        robotPy - arrowLength * Math.sin(angle + arrowAngle)
+      );
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    }
+
+    function updatePosition(distance) {
+      const angleRad = (robotFacing * Math.PI) / 180;
+      const dx = distance * Math.cos(angleRad);
+      const dy = distance * Math.sin(angleRad);
+      robotX += dx;
+      robotY += dy;
+      path.push({ x: robotX, y: robotY });
+      totalDistance += Math.abs(distance);
+      drawCanvas();
+      updateInfo();
+    }
+
+    function turn(angleDegrees) {
+      robotFacing = (robotFacing + angleDegrees + 360) % 360;
+      drawCanvas();
+      updateInfo();
+    }
+
+    function detectObject(type) {
+      const angleRad = (robotFacing * Math.PI) / 180;
+      const offsetX = DETECTION_OFFSET * Math.cos(angleRad);
+      const offsetY = DETECTION_OFFSET * Math.sin(angleRad);
+      const detectX = robotX + offsetX;
+      const detectY = robotY + offsetY;
+      
+      if (type === 'mine') {
+        mines.push({ x: detectX, y: detectY });
+      } else if (type === 'obstacle') {
+        obstacles.push({ x: detectX, y: detectY });
+      }
+      
+      // Add to detection log
+      addToDetectionLog(type, detectX, detectY);
+      drawCanvas();
+    }
+
+    function addToDetectionLog(type, x, y) {
+      const logEntry = document.createElement('div');
+      logEntry.className = 'log-entry';
+      const time = new Date().toLocaleTimeString();
+      logEntry.innerHTML = `
+        <span>${time}</span>
+        <span class="${type}-type">${type.toUpperCase()}</span>
+        <span>(${x.toFixed(2)}, ${y.toFixed(2)})</span>
+      `;
+      document.getElementById('detection-log').prepend(logEntry);
+    }
+
+    function updateInfo() {
+      document.getElementById('robot-pos').textContent = `(${robotX.toFixed(2)}, ${robotY.toFixed(2)})`;
+      document.getElementById('robot-facing').textContent = robotFacing.toFixed(0);
+      document.getElementById('distance-traveled').textContent = totalDistance.toFixed(2);
+    }
+
+    function updateTime() {
+      document.getElementById('current-time').textContent = new Date().toLocaleTimeString();
+    }
+
+    // Event listeners
+    document.getElementById('move-forward').addEventListener('click', () => updatePosition(ROBOT_MOVE_DISTANCE));
+    document.getElementById('move-backward').addEventListener('click', () => updatePosition(-ROBOT_MOVE_DISTANCE));
+    document.getElementById('turn-left').addEventListener('click', () => turn(TURN_ANGLE));
+    document.getElementById('turn-right').addEventListener('click', () => turn(-TURN_ANGLE));
+    document.getElementById('detect-mine').addEventListener('click', () => detectObject('mine'));
+    document.getElementById('detect-obstacle').addEventListener('click', () => detectObject('obstacle'));
+
+    // Initialize
+    drawCanvas();
+    updateInfo();
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    // Parameter slider updates
+    document.querySelectorAll('.parameter-slider').forEach(slider => {
+      slider.addEventListener('input', function() {
+        const value = this.value;
+        const unit = this.closest('.parameter-row').querySelector('.slider-value');
+        if (this.min == '0.05') unit.textContent = `${value} m/s`;
+        else if (this.min == '5') unit.textContent = `${value}°/s`;
+        else unit.textContent = `${value} m`;
+      });
+    });
+  </script>
+</body>
+</html>
