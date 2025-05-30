@@ -1,6 +1,5 @@
 import asyncio
 from collections.abc import AsyncGenerator
-import os
 from contextlib import asynccontextmanager
 
 from sqlalchemy.ext.asyncio import (
@@ -19,15 +18,13 @@ from app.models.base import Base
 
 class RepositoryContext(metaclass=Singleton):
     def __init__(self) -> None:
-        connection: str = "sqlite:///data/db.db"
+        connection: str = "sqlite+aiosqlite:///:memory:"
 
         self.__engine: AsyncEngine = create_async_engine(
             connection,
-            echo=False,
-            pool_size=20,
-            max_overflow=10,
-            pool_timeout=30,
-            pool_recycle=1800,
+            echo=True,
+            connect_args={"check_same_thread": False},
+            poolclass=None,
         )
 
         self.__session_maker: async_sessionmaker[AsyncSession] = async_sessionmaker(
@@ -45,7 +42,7 @@ class RepositoryContext(metaclass=Singleton):
             await asyncio.sleep(2)
             await self.init_db()
 
-    def __del__(self) -> None:
+    async def dispose(self) -> None:
         asyncio.run(self.__engine.dispose())
 
     @asynccontextmanager

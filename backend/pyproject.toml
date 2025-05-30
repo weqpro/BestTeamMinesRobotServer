@@ -2,4 +2,10 @@
 name = "best-team-mines-robot-server"
 version = "0.1.0"
 
-dependencies = ["fastapi[standard]", "uvicorn[standard]", "sqlalchemy"]
+dependencies = [
+  "fastapi",
+  "aiosqlite",
+  "uvicorn[standard]",
+  "sqlalchemy",
+  "greenlet",
+]

@@ -1,2 +1,3 @@
 backend/build/
 backend/best_team_mines_robot_server.egg-info/
+**/__pycache__/

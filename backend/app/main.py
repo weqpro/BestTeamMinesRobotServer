@@ -1,17 +1,23 @@
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
 from sqlalchemy import create_engine
 
-from app.models import *
-from app.models import Base  # so Ruff won't curse
+from app.repository import RepositoryContext, get_repository_context
+from app.routers.v1 import updates_router
 
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    context: RepositoryContext = get_repository_context()
+    await context.init_db()
+    print("Connected to database", flush=True)
+
+    yield
+
+    await context.dispose()
+    print("Closed the connection to database", flush=True)
 
 
-def configure_app():
-    engine = create_engine("sqlite:///data/db.db", echo=True)
-    Base.metadata.create_all(engine)
+app = FastAPI(lifespan=lifespan)
 
-
-if __name__ == "__main__":
-    configure_app()
+app.include_router(updates_router)
