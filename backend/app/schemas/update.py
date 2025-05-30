@@ -3,7 +3,6 @@ from datetime import datetime
 
 
 class UpdateSchema(BaseModel):
-    created_at: datetime
     data: str
 
     model_config = {"from_attributes": True}
