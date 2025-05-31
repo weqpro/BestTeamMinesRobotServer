@@ -194,6 +194,11 @@
               <div class="telemetry-value">0.00</div>
               <div class="telemetry-unit">m/s</div>
             </div>
+            <div class="telemetry-item">
+              <div class="telemetry-label">Detection Count</div>
+              <div class="telemetry-value" id="detection-count">0/2</div>
+              <div class="telemetry-unit">signals</div>
+            </div>
           </div>
         </div>
 
@@ -277,6 +282,13 @@
     let path = [{ x: 0, y: 0 }];
     let mines = [];
     let obstacles = [];
+
+    // WebSocket connection
+    let ws = null;
+
+    // Metal detection counter
+    let detectionCounter = 0;
+    const DETECTION_THRESHOLD = 2;
 
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
@@ -376,6 +388,11 @@
       robotY += dy;
       path.push({ x: robotX, y: robotY });
       totalDistance += Math.abs(distance);
+
+      // Reset detection counter when robot moves
+      detectionCounter = 0;
+      updateDetectionCounter();
+
       drawCanvas();
       updateInfo();
     }
@@ -387,23 +404,22 @@
     }
 
     function detectObject(type) {
-      const angleRad = (robotFacing * Math.PI) / 180;
-      const offsetX = DETECTION_OFFSET * Math.cos(angleRad);
-      const offsetY = DETECTION_OFFSET * Math.sin(angleRad);
-      const detectX = robotX + offsetX;
-      const detectY = robotY + offsetY;
-
       if (type === 'mine') {
-        mines.push({ x: detectX, y: detectY });
-        // Trigger metal detection on backend
+        // Only trigger metal detection on backend
+        // The mine will be added via WebSocket response
         triggerMetalDetection();
       } else if (type === 'obstacle') {
-        obstacles.push({ x: detectX, y: detectY });
-      }
+        const angleRad = (robotFacing * Math.PI) / 180;
+        const offsetX = DETECTION_OFFSET * Math.cos(angleRad);
+        const offsetY = DETECTION_OFFSET * Math.sin(angleRad);
+        const detectX = robotX + offsetX;
+        const detectY = robotY + offsetY;
 
-      // Add to detection log
-      addToDetectionLog(type, detectX, detectY);
-      drawCanvas();
+        obstacles.push({ x: detectX, y: detectY });
+        // Add to detection log
+        addToDetectionLog(type, detectX, detectY);
+        drawCanvas();
+      }
     }
 
     function addToDetectionLog(type, x, y) {
@@ -422,6 +438,10 @@
       document.getElementById('robot-pos').textContent = `(${robotX.toFixed(2)}, ${robotY.toFixed(2)})`;
       document.getElementById('robot-facing').textContent = robotFacing.toFixed(0);
       document.getElementById('distance-traveled').textContent = totalDistance.toFixed(2);
+    }
+
+    function updateDetectionCounter() {
+      document.getElementById('detection-count').textContent = `${detectionCounter}/${DETECTION_THRESHOLD}`;
     }
 
     function updateTime() {
@@ -462,6 +482,56 @@
       });
     }
 
+    // WebSocket functions
+    function connectWebSocket() {
+      ws = new WebSocket('ws://193.169.189.125:8000/drone_data/ws');
+
+      ws.onopen = function(event) {
+        console.log('WebSocket connected');
+      };
+
+      ws.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        console.log('WebSocket message received:', data);
+
+        if (data.type === 'metal_detected') {
+          detectionCounter++;
+          console.log(`Detection count: ${detectionCounter}/${DETECTION_THRESHOLD}`);
+          updateDetectionCounter();
+
+          if (detectionCounter >= DETECTION_THRESHOLD) {
+            // Add mine at current robot position with detection offset
+            const angleRad = (robotFacing * Math.PI) / 180;
+            const offsetX = DETECTION_OFFSET * Math.cos(angleRad);
+            const offsetY = DETECTION_OFFSET * Math.sin(angleRad);
+            const detectX = robotX + offsetX;
+            const detectY = robotY + offsetY;
+
+            mines.push({ x: detectX, y: detectY });
+            addToDetectionLog('mine', detectX, detectY);
+            drawCanvas();
+
+            // Reset counter after successful detection
+            detectionCounter = 0;
+            updateDetectionCounter();
+            console.log('Mine detected and added to map! Counter reset.');
+          } else {
+            console.log(`Detection signal received. Need ${DETECTION_THRESHOLD - detectionCounter} more detection(s).`);
+          }
+        }
+      };
+
+      ws.onclose = function(event) {
+        console.log('WebSocket disconnected');
+        // Try to reconnect after 3 seconds
+        setTimeout(connectWebSocket, 3000);
+      };
+
+      ws.onerror = function(error) {
+        console.error('WebSocket error:', error);
+      };
+    }
+
     // Event listeners with POST requests
     document.getElementById('move-forward').addEventListener('click', () => {
       sendPostRequest('moveForward');
@@ -489,8 +559,12 @@
     // Initialize
     drawCanvas();
     updateInfo();
+    updateDetectionCounter();
     updateTime();
     setInterval(updateTime, 1000);
+
+    // Connect to WebSocket
+    connectWebSocket();
 
     // Parameter slider updates
     document.querySelectorAll('.parameter-slider').forEach(slider => {
