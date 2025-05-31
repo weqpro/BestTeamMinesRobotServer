@@ -307,13 +307,13 @@
       mines.forEach(mine => {
         const px = CANVAS_WIDTH / 2 + metersToPixels(mine.x);
         const py = CANVAS_HEIGHT / 2 - metersToPixels(mine.y);
-        
+
         // Outer glow
         ctx.beginPath();
         ctx.arc(px, py, 8, 0, 2 * Math.PI);
         ctx.fillStyle = 'rgba(255, 68, 68, 0.3)';
         ctx.fill();
-        
+
         // Inner circle
         ctx.beginPath();
         ctx.arc(px, py, 4, 0, 2 * Math.PI);
@@ -325,12 +325,12 @@
       obstacles.forEach(obstacle => {
         const px = CANVAS_WIDTH / 2 + metersToPixels(obstacle.x);
         const py = CANVAS_HEIGHT / 2 - metersToPixels(obstacle.y);
-        
+
         ctx.beginPath();
         ctx.arc(px, py, 6, 0, 2 * Math.PI);
         ctx.fillStyle = '#888';
         ctx.fill();
-        
+
         // Highlight
         ctx.beginPath();
         ctx.arc(px, py, 4, 0, 2 * Math.PI);
@@ -341,13 +341,13 @@
       // Draw robot with enhanced arrow
       const robotPx = CANVAS_WIDTH / 2 + metersToPixels(robotX);
       const robotPy = CANVAS_HEIGHT / 2 - metersToPixels(robotY);
-      
+
       // Robot body
       ctx.beginPath();
       ctx.arc(robotPx, robotPy, 8, 0, 2 * Math.PI);
       ctx.fillStyle = '#007BFF';
       ctx.fill();
-      
+
       // Direction arrow
       ctx.beginPath();
       ctx.moveTo(robotPx, robotPy);
@@ -392,13 +392,15 @@
       const offsetY = DETECTION_OFFSET * Math.sin(angleRad);
       const detectX = robotX + offsetX;
       const detectY = robotY + offsetY;
-      
+
       if (type === 'mine') {
         mines.push({ x: detectX, y: detectY });
+        // Trigger metal detection on backend
+        triggerMetalDetection();
       } else if (type === 'obstacle') {
         obstacles.push({ x: detectX, y: detectY });
       }
-      
+
       // Add to detection log
       addToDetectionLog(type, detectX, detectY);
       drawCanvas();
@@ -439,6 +441,24 @@
       .then(data => console.log(data))
       .catch((error) => {
         console.error('Error:', error);
+      });
+    }
+
+    // Function to trigger metal detection on backend
+    function triggerMetalDetection() {
+      fetch('http://193.169.189.125:8000/drone_data/detect_metal', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({}),
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Metal detection triggered:', data);
+      })
+      .catch((error) => {
+        console.error('Error triggering metal detection:', error);
       });
     }
 

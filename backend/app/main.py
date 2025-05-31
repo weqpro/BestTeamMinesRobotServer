@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.repository import RepositoryContext, get_repository_context
-from app.routers.v1 import updates_router
+from app.routers.v1 import updates_router, drone_data_router
 
 
 @asynccontextmanager
@@ -28,3 +28,4 @@ app.add_middleware(
 )
 
 app.include_router(updates_router)
+app.include_router(drone_data_router)
