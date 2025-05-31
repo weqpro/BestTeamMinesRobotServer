@@ -221,6 +221,39 @@
 
         <div class="panel-section">
           <h3 class="section-title">
+            <i class="fas fa-keyboard"></i>
+            KEYBOARD CONTROLS
+          </h3>
+          <div class="legend-items">
+            <div class="legend-item">
+              <div class="legend-color" style="background: #007BFF; border-radius: 3px; width: 20px; height: 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px;">↑</div>
+              <span>Move Forward</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background: #007BFF; border-radius: 3px; width: 20px; height: 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px;">↓</div>
+              <span>Move Backward</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background: #007BFF; border-radius: 3px; width: 20px; height: 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px;">←</div>
+              <span>Turn Left</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background: #007BFF; border-radius: 3px; width: 20px; height: 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px;">→</div>
+              <span>Turn Right</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background: #ff4444; border-radius: 3px; width: 30px; height: 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">SPACE</div>
+              <span>Detect Mine</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background: #888; border-radius: 3px; width: 20px; height: 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px;">O</div>
+              <span>Detect Obstacle</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h3 class="section-title">
             <i class="fas fa-info-circle"></i>
             LEGEND
           </h3>
@@ -289,6 +322,10 @@
     // Metal detection counter
     let detectionCounter = 0;
     const DETECTION_THRESHOLD = 2;
+
+    // Keyboard state tracking
+    let keysPressed = {};
+    let movementInterval = null;
 
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
@@ -444,6 +481,19 @@
       document.getElementById('detection-count').textContent = `${detectionCounter}/${DETECTION_THRESHOLD}`;
     }
 
+    // Function to highlight button when key is pressed
+    function highlightButton(buttonId) {
+      const button = document.getElementById(buttonId);
+      if (button) {
+        button.style.transform = 'scale(0.95)';
+        button.style.boxShadow = '0 0 20px rgba(0, 123, 255, 0.8)';
+        setTimeout(() => {
+          button.style.transform = '';
+          button.style.boxShadow = '';
+        }, 150);
+      }
+    }
+
     function updateTime() {
       document.getElementById('current-time').textContent = new Date().toLocaleTimeString();
     }
@@ -555,6 +605,108 @@
 
     document.getElementById('detect-mine').addEventListener('click', () => detectObject('mine'));
     document.getElementById('detect-obstacle').addEventListener('click', () => detectObject('obstacle'));
+
+    // Keyboard controls
+    document.addEventListener('keydown', function(event) {
+      // Prevent default behavior for arrow keys to avoid page scrolling
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(event.code)) {
+        event.preventDefault();
+      }
+
+      // Avoid repeating actions if key is already pressed
+      if (keysPressed[event.code]) {
+        return;
+      }
+      keysPressed[event.code] = true;
+
+      switch(event.code) {
+        case 'ArrowUp':
+          // Move forward
+          highlightButton('move-forward');
+          sendPostRequest('moveForward');
+          updatePosition(ROBOT_MOVE_DISTANCE);
+          startContinuousMovement('forward');
+          break;
+        case 'ArrowDown':
+          // Move backward
+          highlightButton('move-backward');
+          sendPostRequest('moveBackward');
+          updatePosition(-ROBOT_MOVE_DISTANCE);
+          startContinuousMovement('backward');
+          break;
+        case 'ArrowLeft':
+          // Turn left
+          highlightButton('turn-left');
+          sendPostRequest('rotateLeft');
+          turn(TURN_ANGLE);
+          startContinuousMovement('left');
+          break;
+        case 'ArrowRight':
+          // Turn right
+          highlightButton('turn-right');
+          sendPostRequest('rotateRight');
+          turn(-TURN_ANGLE);
+          startContinuousMovement('right');
+          break;
+        case 'Space':
+          // Detect mine
+          highlightButton('detect-mine');
+          detectObject('mine');
+          break;
+        case 'KeyO':
+          // Detect obstacle
+          highlightButton('detect-obstacle');
+          detectObject('obstacle');
+          break;
+      }
+    });
+
+    document.addEventListener('keyup', function(event) {
+      keysPressed[event.code] = false;
+
+      // Stop continuous movement when key is released
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.code)) {
+        stopContinuousMovement();
+      }
+    });
+
+    function startContinuousMovement(direction) {
+      stopContinuousMovement(); // Clear any existing interval
+
+      movementInterval = setInterval(() => {
+        switch(direction) {
+          case 'forward':
+            sendPostRequest('moveForward');
+            updatePosition(ROBOT_MOVE_DISTANCE);
+            break;
+          case 'backward':
+            sendPostRequest('moveBackward');
+            updatePosition(-ROBOT_MOVE_DISTANCE);
+            break;
+          case 'left':
+            sendPostRequest('rotateLeft');
+            turn(TURN_ANGLE);
+            break;
+          case 'right':
+            sendPostRequest('rotateRight');
+            turn(-TURN_ANGLE);
+            break;
+        }
+      }, 200); // Repeat every 200ms
+    }
+
+    function stopContinuousMovement() {
+      if (movementInterval) {
+        clearInterval(movementInterval);
+        movementInterval = null;
+      }
+    }
+
+    // Stop movement when window loses focus
+    window.addEventListener('blur', function() {
+      stopContinuousMovement();
+      keysPressed = {};
+    });
 
     // Initialize
     drawCanvas();
